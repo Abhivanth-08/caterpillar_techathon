@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LiDAR Truck Bed Reconstruction — 3D Dashboard</title>
+  <meta name="description" content="Real-time 3D LiDAR point cloud reconstruction dashboard for truck bed cargo analysis with volume estimation and load balance monitoring.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ── Header bar ── -->
+<header id="header">
+  <div class="logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"
+         stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="8" width="14" height="10" rx="1"/>
+      <path d="M16 10h3l3 3v5h-6V10z"/>
+      <circle cx="6"  cy="19" r="2"/>
+      <circle cx="18" cy="19" r="2"/>
+      <path d="M4 5h8M4 3h5" opacity=".5"/>
+      <path d="M8 2v3" opacity=".4"/>
+    </svg>
+    <span class="logo-text">LIDAR<span class="logo-sep">·</span>TRUCK<span class="logo-sep">·</span>RECON</span>
+    <span class="logo-version">v3.0</span>
+  </div>
+  <div class="header-right">
+    <span class="status-dot" id="status-indicator">SENSOR ACTIVE</span>
+    <span id="clock">00:00:00</span>
+    <span class="header-tag">FastAPI</span>
+  </div>
+</header>
+
+<!-- ── Main layout ── -->
+<div id="layout">
+
+  <!-- ── 3D Viewport ── -->
+  <div id="viewport-wrap">
+    <span id="viewport-label">LIDAR / POINT CLOUD VIEW</span>
+    <div id="scan-bar"></div>
+    <canvas id="three-canvas"></canvas>
+
+    <!-- Loading overlay -->
+    <div id="loading">
+      <div class="spinner"></div>
+      <span>INITIALISING LIDAR…</span>
+    </div>
+
+    <!-- Error toast -->
+    <div id="error-toast"></div>
+
+    <!-- FPS counter -->
+    <div id="fps-counter">-- FPS</div>
+  </div>
+
+  <!-- ── Side panel ── -->
+  <aside id="side-panel">
+
+    <!-- Volume & stats -->
+    <div class="section-header"><span class="dot"></span>CARGO METRICS</div>
+    <div class="stat-grid">
+      <div class="stat-card" id="card-volume">
+        <div class="label">VOLUME</div>
+        <div class="value" id="stat-volume">–<span class="unit">m³</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="label">TOTAL PTS</div>
+        <div class="value sm" id="stat-points">–</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">LOAD PTS</div>
+        <div class="value sm" id="stat-load-pts">–</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">BACKEND</div>
+        <div class="value xs" id="stat-backend">–</div>
+      </div>
+    </div>
+
+    <!-- Balance indicators -->
+    <div class="section-header"><span class="dot"></span>LOAD BALANCE</div>
+    <div id="balance-section">
+      <div class="balance-row">
+        <span class="balance-label">L / R</span>
+        <div class="balance-bar-wrap">
+          <div class="balance-centre"></div>
+          <div class="balance-fill" id="bal-x-fill"></div>
+        </div>
+        <span class="balance-tag" id="bal-x-tag">–</span>
+      </div>
+      <div class="balance-row">
+        <span class="balance-label">F / R</span>
+        <div class="balance-bar-wrap">
+          <div class="balance-centre"></div>
+          <div class="balance-fill" id="bal-y-fill"></div>
+        </div>
+        <span class="balance-tag" id="bal-y-tag">–</span>
+      </div>
+    </div>
+
+    <!-- View toggle -->
+    <div class="section-header"><span class="dot"></span>DISPLAY MODE</div>
+    <div id="view-toggle">
+      <button class="toggle-btn active" data-mode="both" id="btn-both">BOTH</button>
+      <button class="toggle-btn" data-mode="points" id="btn-cloud">CLOUD</button>
+      <button class="toggle-btn" data-mode="mesh" id="btn-mesh">MESH</button>
+    </div>
+
+    <!-- Point size slider -->
+    <div class="section-header"><span class="dot"></span>POINT SIZE</div>
+    <div id="slider-section">
+      <input type="range" id="point-size-slider" min="1" max="8" step="0.5" value="3">
+      <span id="point-size-label">3.0</span>
+    </div>
+
+    <!-- Colour legend -->
+    <div class="section-header"><span class="dot"></span>HEIGHT MAP</div>
+    <div id="legend">
+      <div class="legend-bar"></div>
+      <div class="legend-labels">
+        <span>LOW</span>
+        <span>MID</span>
+        <span>HIGH</span>
+      </div>
+    </div>
+
+    <!-- System log -->
+    <div class="section-header"><span class="dot"></span>SYSTEM LOG</div>
+    <div id="log-section">
+      <pre id="log-output"></pre>
+    </div>
+
+  </aside>
+</div>
+
+<!-- Three.js r128 + OrbitControls (global script compatible) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
